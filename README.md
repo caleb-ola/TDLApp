@@ -12,10 +12,11 @@ TDLAPP API is the backend service for TDLAPP, a task management application.
    - [Installation](#installation)
    - [Authentication](#authentication)
 3. [API Documentation](#api-documentation)
-4. [Contributing](#contributing)
-5. [Version History](#version-history)
-6. [Author](#author)
-7. [License](#license)
+4. [Roadmap](#roadmap)
+5. [Contributing](#contributing)
+6. [Version History](#version-history)
+7. [Author](#author)
+8. [License](#license)
 
 ## Introduction
 
@@ -23,10 +24,12 @@ TDLAPP API is the backend system that powers the TDLAPP task management applicat
 
 ### Key Features:
 
-Authentication: Signup, Signin, verify email, resend verify email, reset password.
-User Management: Create user accounts, update profiles, and retrieve user information.
-Task Operations: Create, update, retrieve, and delete tasks.
-Category Management: Organize tasks by categories, providing a structured and user-friendly browsing experience.
+- **Authentication:** Signup, Signin, verify email, resend verify email, reset password.
+- **User Management:** Create user accounts, update profiles, and retrieve user information.
+- **Task Operations:** Create, update, retrieve, and delete tasks.
+- **Category Management**: Organize tasks by categories, providing a structured and user-friendly browsing experience.
+- **API Endpoints:** Well-documented API endpoints for smooth communication between the frontend and backend.
+- **Scalable Architecture:** Built on Node.js and Express, with MongoDB as the database, ensuring scalability and performance.
 
 ### Technologies Used:
 
@@ -66,6 +69,10 @@ To ensure the security of user data and protected endpoints, the TDLAPP API uses
 ## API Endpoints
 
 For detailed information on how to use the TDLAPP API, please refer to the [API Documentation](https://documenter.getpostman.com/view/12146558/2s9YysCM8w).
+
+## Roadmap
+
+The roadmap outlines upcoming features and improvements planned for the TDLAPP API. Stay tuned for enhancements to task management, user authentication, and overall system scalability.
 
 ## Contributing
 
