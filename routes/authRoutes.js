@@ -1,4 +1,4 @@
-const express = require("express");
+const { Router } = require("express");
 const {
   signup,
   login,
@@ -8,7 +8,7 @@ const {
   updatePassword,
 } = require("../controllers/authController");
 
-const router = express.Router();
+const router = Router();
 
 router.post("/signup", signup);
 router.post("/login", login);

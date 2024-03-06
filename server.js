@@ -9,14 +9,9 @@ const URI = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
-mongoose
-  .connect(URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Database connection successful!");
-  });
+mongoose.connect(URI).then(() => {
+  console.log("Database connection successful!");
+});
 
 app.listen(port, () => {
   console.log(`App running on port ${port}`);

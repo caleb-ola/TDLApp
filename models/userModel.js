@@ -1,7 +1,7 @@
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
-const { default: slugify } = require("slugify");
+const slugify = require("slugify");
 const crypto = require("crypto");
 
 const CategorySchema = new mongoose.Schema(
@@ -120,11 +120,8 @@ UserSchema.methods.checkPassword = async function (
 
 UserSchema.methods.changePasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
-    const changedTimestamp = parseInt(
-      this.passwordChangedAt.getTime() / 1000,
-      10
-    );
-    return JWTTimestamp < changedTimestamp;
+    const changedTimestamp = parseInt(this.passwordChangedAt.getTime(), 10);
+    return JWTTimestamp < changedTimestamp / 1000;
     // console.log(changedTimestamp, JWTTimestamp);
   }
   return false;

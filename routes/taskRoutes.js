@@ -27,5 +27,4 @@ router.patch(
   CheckTaskExists,
   toggleTaskCompleted
 );
-
 module.exports = router;

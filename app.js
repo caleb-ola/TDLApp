@@ -8,7 +8,7 @@ const authRouter = require("./routes/authRoutes");
 const userRouter = require("./routes/userRoutes");
 const categoryRouter = require("./routes/categoryRoutes");
 
-const { NotFound, ErrorHandler } = require("./middlewares/errors");
+const { NotFound, ErrorHandler } = require("./middlewares/Errors");
 
 const app = express();
 
