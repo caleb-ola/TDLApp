@@ -35,11 +35,11 @@ const taskSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    category: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Category",
-      required: true,
-    },
+    // category: {
+    //   type: mongoose.Schema.ObjectId,
+    //   ref: "Category",
+    //   required: true,
+    // },
     createdAt: {
       type: Date,
       default: Date.now(),

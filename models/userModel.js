@@ -71,7 +71,12 @@ const UserSchema = new mongoose.Schema(
         message: "Passwords must be the same",
       },
     },
-    categories: [CategorySchema],
+    // categories: [
+    //   {
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: "Category",
+    //   },
+    // ],
     slug: String,
     passwordChangedAt: Date,
     passwordResetToken: String,

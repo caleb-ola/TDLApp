@@ -57,38 +57,38 @@ exports.createTask = asyncHandler(async (req, res) => {
 
   // VERIFY USER'S CATEGORY
   // const user = await User.findOne({ _id: req.user._id });
-  if (!req.user.verifyUserCategory(category)) {
-    ErrorMessage("The category does not belong to this user", 403, res);
-  }
+  // if (!req.user.verifyUserCategory(category)) {
+  //   ErrorMessage("The category does not belong to this user", 403, res);
+  // }
 
-  const taskExist = await Tasks.findOne({ title });
-  if (taskExist) {
-    throw new Error("Task already exists");
-  } else {
-    // const newTask = await Tasks.create(req.body);
-    const task = new Tasks({
-      title,
-      description,
-      priority,
-      status,
-      dueDate,
-      category,
-      user: req.user._id,
+  // const taskExist = await Tasks.findOne({ title });
+  // if (taskExist) {
+  //   throw new Error("Task already exists");
+  // } else {
+  // const newTask = await Tasks.create(req.body);
+  const task = new Tasks({
+    title,
+    description,
+    priority,
+    status,
+    dueDate,
+    category,
+    user: req.user._id,
+  });
+
+  if (task) {
+    const createdTask = await task.save();
+    res.status(201).json({
+      status: "success",
+      data: {
+        data: createdTask,
+      },
     });
-
-    if (task) {
-      const createdTask = await task.save();
-      res.status(201).json({
-        status: "success",
-        data: {
-          data: createdTask,
-        },
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid task data");
-    }
+  } else {
+    res.status(400);
+    throw new Error("Invalid task data");
   }
+  // }
 });
 
 // UPDATE A TASK
@@ -140,14 +140,13 @@ exports.deleteTask = asyncHandler(async (req, res) => {
 // TOGGLE TASK AS COMPLETED OR UNCOMPLETED
 exports.toggleTaskCompleted = asyncHandler(async (req, res) => {
   const { slug } = req.params;
-  const task = await Tasks.findOne({ slug });
 
   const { user } = req;
-  // console.log(user._id, task.user);
 
-  if (user._id.toString() !== task.user.toString()) {
+  const task = await Tasks.findOne({ slug, user: user._id });
+  if (!task) {
     res.status(403);
-    throw new Error("You are not allowed to perform this action");
+    return new Error("You are not allowed to perform this action");
   }
 
   task.status = task.status === "pending" ? "completed" : "pending";
