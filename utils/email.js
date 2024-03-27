@@ -54,7 +54,7 @@ class Email {
     await this.newTransport().sendMail(mailOptions);
   }
 
-  async registerEmail() {
+  async verifyEmail() {
     return this.send("verifyEmail", "Verify Your Email Address for TDLApp 📧");
   }
 }

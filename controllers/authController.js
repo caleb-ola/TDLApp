@@ -5,6 +5,7 @@ const asyncHandler = require("express-async-handler");
 const { promisify } = require("util");
 const sendEmail = require("../utils/email");
 const crypto = require("crypto");
+const Email = require("../utils/email");
 
 // FUNCTION TO GENERATE A TOKEN
 const generateToken = (id) => {
@@ -37,9 +38,40 @@ exports.signup = asyncHandler(async (req, res) => {
     role: "user",
   });
 
-  const createdUser = await newUser.save();
+  await newUser.save();
 
-  createSendToken(createdUser, 201, res);
+  await new Email(
+    newUser,
+    `${process.env.APP_client}/auth/verification-email`
+  ).verifyEmail();
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "We sent a verification to your email.",
+    },
+  });
+});
+
+exports.verifyEmail = asyncHandler(async (req, res) => {
+  const { token } = req.body;
+  if (!token) throw new Error("Email is required");
+
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const user = await User.findOne({
+    verificationToken: hashedToken,
+    verificationTokenExpires: { $gt: Date.now() },
+  });
+
+  if (!user) throw new Error("Tokne is invalid or expired");
+
+  user.isVerified = true;
+  user.verificationToken = undefined;
+  user.verificationTokenExpires = undefined;
+  user.save();
+
+  createSendToken(user, 200, res);
 });
 
 exports.login = asyncHandler(async (req, res) => {
@@ -51,7 +83,7 @@ exports.login = asyncHandler(async (req, res) => {
   }
 
   // GET USER
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email }).select("+password +isVerified");
 
   // CHECKING IF EMAIL AND PASSWORD ARE CORRECT
   // const correct = await user.checkPassword(password, user.password);
@@ -59,6 +91,14 @@ exports.login = asyncHandler(async (req, res) => {
   if (!user || !(await user.checkPassword(password, user.password))) {
     throw new Error("Username or Password incorrect");
   }
+  if (!user.isVerified)
+    throw new Error(
+      "We sent you a verification email, please confirm your email."
+    );
+  if (!user.active)
+    throw new Error(
+      "Your account has been suspended, please reach out to our support team."
+    );
 
   createSendToken(user, 200, res);
 });
