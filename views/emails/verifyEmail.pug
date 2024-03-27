@@ -1,0 +1,53 @@
+extends base
+
+block content
+    tr
+        td(style='\
+        font-weight: 700;\
+        font-size: 1.8rem;\
+        color: #060016;\
+        padding-top: 25px;\
+        padding-bottom: 10px;\
+        ')
+            | Welcome to the Community!
+    // CONTENT HEADER ENDS
+    // CONTENT BODY STARTS
+    tr(style='text-align: left; color: #4f4f4f')
+        td(style='padding: 0 50px')
+            p Hi {{Firstname}}, Welcome to the Community!
+            //
+                <p>
+                We are thrilled to have you join our Trybe community of tech
+                enthusiasts and smart entrepreneurs thriving and making waves.
+                </p>
+            p
+                | To get started, click this
+                span
+                    a(href='/' style='font-weight: 700; color: #4f4f4f')
+                        em link
+                |             to join the Telegram Channel where all the amazing activites and
+                |             resources you need for your career growth would be shared.
+    // CONTENT BUTTON(S)
+    tr(style='text-align: left; color: #4f4f4f')
+        td(style='text-align: left; padding: 0 50px')
+            button(style='\
+            background: #4942e4;\
+            color: #fff;\
+            border-radius: 5px;\
+            padding: 15px 35px;\
+            border: 0;\
+            font-weight: 700;\
+            cursor: pointer;\
+            margin: 20px auto 20px;\
+            box-shadow: 0px 2px 12px rgba(51, 51, 51, 0.1);\
+            font-size: 1rem;\
+            ')
+                | Join the Community
+    // CONTENT BUTTON(S)
+    tr(style='text-align: left; color: #4f4f4f')
+        td(style='padding: 0 50px')
+            p(style='padding-bottom: 35px')
+                | Sincerely, 
+                br
+                |             Community Manager.
+    // CONTENT BODY ENDS
