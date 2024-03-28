@@ -40,8 +40,14 @@ class Email {
   }
 
   async send(template, subject) {
-    // eslint-disable-next-line no-undef
-    const html = pug.renderFile(`${__dirname}/../views/emails/${template}.pug`);
+    const html = pug.renderFile(
+      // eslint-disable-next-line no-undef
+      `${__dirname}/../views/emails/${template}.pug`,
+      {
+        url: this.url,
+        firstname: this.firstname,
+      }
+    );
 
     const mailOptions = {
       from: this.from,
@@ -56,6 +62,13 @@ class Email {
 
   async verifyEmail() {
     return this.send("verifyEmail", "Verify Your Email Address for TDLApp 📧");
+  }
+
+  async resendVerifyEmail() {
+    return this.send(
+      "resendVerifyEmail",
+      "Verify Your Email Address for TDLApp 📧"
+    );
   }
 }
 

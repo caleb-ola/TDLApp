@@ -155,7 +155,7 @@ UserSchema.methods.createResetPasswordToken = function () {
 };
 
 UserSchema.methods.createVerificationToken = function () {
-  const verificationToken = crypto.randonBytes(18).toString("hex");
+  const verificationToken = crypto.randomBytes(18).toString("hex");
 
   this.verificationToken = crypto
     .createHash("sha256")

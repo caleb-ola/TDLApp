@@ -29,6 +29,11 @@ const createSendToken = (user, statusCode, res) => {
 
 exports.signup = asyncHandler(async (req, res) => {
   const { name, email, username, password, confirmPassword } = req.body;
+
+  const exisitingUser = await User.findOne({ email });
+  if (exisitingUser)
+    throw new Error("User already exists, please try another email.");
+
   const newUser = new User({
     name,
     email,
@@ -38,12 +43,14 @@ exports.signup = asyncHandler(async (req, res) => {
     role: "user",
   });
 
-  await newUser.save();
+  const token = await newUser.createVerificationToken();
 
   await new Email(
     newUser,
-    `${process.env.APP_client}/auth/verification-email`
+    `${process.env.APP_CLIENT}/auth/verification-email/${token}`
   ).verifyEmail();
+
+  await newUser.save();
 
   res.status(200).json({
     status: "success",
@@ -55,7 +62,7 @@ exports.signup = asyncHandler(async (req, res) => {
 
 exports.verifyEmail = asyncHandler(async (req, res) => {
   const { token } = req.body;
-  if (!token) throw new Error("Email is required");
+  if (!token) throw new Error("Token is required");
 
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
@@ -72,6 +79,29 @@ exports.verifyEmail = asyncHandler(async (req, res) => {
   user.save();
 
   createSendToken(user, 200, res);
+});
+
+exports.resendVerifyEmail = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) throw new Error("Email is required");
+
+  const user = await User.findOne({ email }).select("+isVerified");
+  if (!user) throw new Error("User not found");
+
+  if (user.isVerified) throw new Error("User is  already verified.");
+
+  const verifyToken = await user.createVerificationToken();
+  user.save({ validateBeforeSave: false });
+  const verifyUrl = `${process.env.APP_CLIENT}/resend-verification/${verifyToken}`;
+
+  await new Email(user, verifyUrl).resendVerifyEmail();
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "We sent a verification to your email.",
+    },
+  });
 });
 
 exports.login = asyncHandler(async (req, res) => {
@@ -266,4 +296,21 @@ exports.updatePassword = asyncHandler(async (req, res) => {
   await user.save();
 
   createSendToken(user, 200, res);
+});
+
+exports.testEmail = asyncHandler(async (req, res) => {
+  const user = {
+    name: "Test Man",
+    email: "test@tdlapp.io",
+    username: "@testerMann",
+  };
+
+  await new Email(user, "https://tdlapp.io").verifyEmail();
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "Email sent",
+    },
+  });
 });
