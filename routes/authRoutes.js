@@ -9,6 +9,7 @@ const {
   verifyEmail,
   resendVerifyEmail,
   testEmail,
+  googleLogin,
 } = require("../controllers/authController");
 
 const router = Router();
@@ -21,5 +22,6 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 router.post("/update-password", protect, updatePassword);
 router.post("/test-email", testEmail);
+router.get("/google", googleLogin);
 
 module.exports = router;

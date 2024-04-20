@@ -13,7 +13,7 @@ class Email {
   constructor(user, url) {
     this.to = user.email;
     this.from = process.env.API_EMAIL_FROM;
-    this.firstname = user.name.split(" ")[0];
+    this.firstname = user?.name?.split(" ")[0];
     this.url = url;
   }
 

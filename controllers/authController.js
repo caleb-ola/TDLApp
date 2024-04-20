@@ -6,6 +6,8 @@ const { promisify } = require("util");
 const sendEmail = require("../utils/email");
 const crypto = require("crypto");
 const Email = require("../utils/email");
+const { oauth2Client } = require("../utils/oauth2client");
+const { default: axios } = require("axios");
 
 // FUNCTION TO GENERATE A TOKEN
 const generateToken = (id) => {
@@ -29,6 +31,8 @@ const createSendToken = (user, statusCode, res) => {
 
 exports.signup = asyncHandler(async (req, res) => {
   const { name, email, username, password, confirmPassword } = req.body;
+  if (password !== confirmPassword)
+    throw new Error("Passwords must be the same.");
 
   const exisitingUser = await User.findOne({ email });
   if (exisitingUser)
@@ -71,7 +75,7 @@ exports.verifyEmail = asyncHandler(async (req, res) => {
     verificationTokenExpires: { $gt: Date.now() },
   });
 
-  if (!user) throw new Error("Tokne is invalid or expired");
+  if (!user) throw new Error("Token is invalid or expired");
 
   user.isVerified = true;
   user.verificationToken = undefined;
@@ -92,7 +96,7 @@ exports.resendVerifyEmail = asyncHandler(async (req, res) => {
 
   const verifyToken = await user.createVerificationToken();
   user.save({ validateBeforeSave: false });
-  const verifyUrl = `${process.env.APP_CLIENT}/resend-verification/${verifyToken}`;
+  const verifyUrl = `${process.env.APP_CLIENT}/verification-email /${verifyToken}`;
 
   await new Email(user, verifyUrl).resendVerifyEmail();
 
@@ -113,7 +117,9 @@ exports.login = asyncHandler(async (req, res) => {
   }
 
   // GET USER
-  const user = await User.findOne({ email }).select("+password +isVerified");
+  const user = await User.findOne({ email }).select(
+    "+password +isVerified +active"
+  );
 
   // CHECKING IF EMAIL AND PASSWORD ARE CORRECT
   // const correct = await user.checkPassword(password, user.password);
@@ -129,6 +135,31 @@ exports.login = asyncHandler(async (req, res) => {
     throw new Error(
       "Your account has been suspended, please reach out to our support team."
     );
+
+  createSendToken(user, 200, res);
+});
+
+exports.googleLogin = asyncHandler(async (req, res) => {
+  // Extreact authorization code
+  const { code } = req.query;
+  const googleRes = await oauth2Client.oauth2Client.getToken(code);
+
+  oauth2Client.oauth2Client.setCredentials(googleRes.tokens);
+
+  const userRes = await axios.get(
+    `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
+  );
+
+  let user = await User.findOne({ email: userRes.data.email });
+
+  if (!user) {
+    console.log("New User found");
+    user = await User.create({
+      name: userRes.data.name,
+      email: userRes.data.email,
+      image: userRes.data.picture,
+    });
+  }
 
   createSendToken(user, 200, res);
 });
