@@ -1,11 +1,9 @@
 const { google } = require("googleapis");
-const process = require("process");
-
-const GOOGLE_CLIENT_ID = `${process.env.GOOGLE_CLIENT_ID}`;
-const GOOGLE_CLIENT_SECRET = `${process.env.GOOGLE_CLIENT_SECRET}`;
+const { env } = require("node:process");
+const config = require("../config");
 
 exports.oauth2Client = new google.auth.OAuth2(
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
+  config.GOOGLE_CLIENT_ID,
+  config.GOOGLE_CLIENT_SECRET,
   "postmessage"
 );

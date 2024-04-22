@@ -96,7 +96,7 @@ exports.resendVerifyEmail = asyncHandler(async (req, res) => {
 
   const verifyToken = await user.createVerificationToken();
   user.save({ validateBeforeSave: false });
-  const verifyUrl = `${process.env.APP_CLIENT}/verification-email /${verifyToken}`;
+  const verifyUrl = `${process.env.APP_CLIENT}/verification-email/${verifyToken}`;
 
   await new Email(user, verifyUrl).resendVerifyEmail();
 
@@ -140,24 +140,40 @@ exports.login = asyncHandler(async (req, res) => {
 });
 
 exports.googleLogin = asyncHandler(async (req, res) => {
-  // Extreact authorization code
+  // Extract authorization code
   const { code } = req.query;
-  const googleRes = await oauth2Client.oauth2Client.getToken(code);
+  const googleRes = await oauth2Client.getToken(code);
+  // console.log({ googleRes });
+  // console.log(googleRes.tokens);
+  // oauth2Client.getToken(code, (err, tokens) => {
+  //   if (err) {
+  //     console.error("Error exchanging authorization code for tokens:", err);
+  //     return res
+  //       .status(500)
+  //       .send("Error exchanging authorization code for tokens");
+  //   }
+  //   // Tokens received, perform further actions (e.g., store tokens, redirect user)
+  //   console.log("Tokens received:", tokens);
+  //   res.send("Authentication successful! Tokens received.");
+  // });
 
-  oauth2Client.oauth2Client.setCredentials(googleRes.tokens);
+  oauth2Client.setCredentials(googleRes.tokens);
 
   const userRes = await axios.get(
     `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
   );
 
+  // res.status(200).json(userRes?.data);
+  // console.log({ userRes });
+
   let user = await User.findOne({ email: userRes.data.email });
 
   if (!user) {
-    console.log("New User found");
+    // console.log("New User found");
     user = await User.create({
       name: userRes.data.name,
       email: userRes.data.email,
-      image: userRes.data.picture,
+      // image: userRes.data.picture,
     });
   }
 
